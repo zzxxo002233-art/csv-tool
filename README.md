@@ -66,6 +66,15 @@ npm run build
 
 构建产物在 `dist` 目录
 
+### 部署到 GitHub Pages
+
+1. 将本仓库推送到 GitHub（仓库名任意，如 `csv-tool`）。
+2. 在仓库 **Settings → Pages** 中，**Source** 选择 **Deploy from a branch**，分支选 **gh-pages**，目录选 **/ (root)**，保存。
+3. 推送代码到 `main` 分支后，GitHub Actions 会自动构建并推送到 `gh-pages` 分支完成部署。
+4. 访问地址：`https://<你的用户名>.github.io/<仓库名>/`（例如 `https://xxx.github.io/csv-tool/`）。
+
+本地开发时直接 `npm run dev`，访问 http://localhost:5173 即可，无需子路径。
+
 ## CSV文件格式
 
 ### 输入格式（导入）

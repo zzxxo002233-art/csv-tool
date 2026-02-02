@@ -9,15 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
       - name: Build
         run: npm run build
-      - name: Deploy
+        env:
+          # 使用仓库名作为子路径，访问地址为 https://<username>.github.io/<repo名>/
+          BASE_PATH: /${{ github.event.repository.name }}/
+
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

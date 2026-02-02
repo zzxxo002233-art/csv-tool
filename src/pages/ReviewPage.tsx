@@ -275,15 +275,6 @@ export const ReviewPage: React.FC = () => {
   // 允许已抽卡的数据重新选择修改
   const canEdit = true;
 
-  // 调试：输出图片链接（开发时使用）
-  console.log('专辑图片链接:', {
-    albumId: album.albumId,
-    image1: album.image1,
-    image2: album.image2,
-    image3: album.image3,
-    image4: album.image4,
-  });
-
   return (
     <div
       style={{
