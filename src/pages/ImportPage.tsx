@@ -164,9 +164,9 @@ export const ImportPage: React.FC = () => {
               CSV文件格式要求：
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.8' }}>
-              <div>• 表头字段（按顺序）：专辑id、专辑名称、书名、赛道品类、图片1链接、图片2链接、图片3链接、图片4链接</div>
-              <div>• 文件编码：UTF-8</div>
-              <div>• 每行一个专辑数据</div>
+              <div>• 表头<strong>必须</strong>包含「专辑id」；其余列（专辑名称、书名、赛道品类、图片1～4链接）可省略或留空</div>
+              <div>• 推荐完整表头顺序：专辑id、专辑名称、书名、赛道品类、图片1链接、图片2链接、图片3链接、图片4链接</div>
+              <div>• 文件编码：UTF-8；每行一条专辑数据，仅专辑 id 不能为空</div>
             </div>
           </div>
 

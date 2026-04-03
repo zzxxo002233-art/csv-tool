@@ -1,4 +1,4 @@
-import { Album, CSV_HEADERS } from '../types';
+import { Album, CSV_REQUIRED_HEADER } from '../types';
 
 /**
  * 解析CSV文件
@@ -21,46 +21,48 @@ export function parseCSV(file: File): Promise<Album[]> {
         const headerLine = lines[0];
         const headers = parseCSVLine(headerLine);
         
-        // 校验表头
-        const missingHeaders: string[] = [];
-        CSV_HEADERS.forEach(expectedHeader => {
-          if (!headers.includes(expectedHeader)) {
-            missingHeaders.push(expectedHeader);
-          }
-        });
-        
-        if (missingHeaders.length > 0) {
-          reject(new Error(`缺少必需字段：${missingHeaders.join('、')}`));
+        // 表头：仅要求包含「专辑id」，其余列选填（可省略整列）
+        if (!headers.includes(CSV_REQUIRED_HEADER)) {
+          reject(new Error(`缺少必需字段：${CSV_REQUIRED_HEADER}`));
           return;
         }
-        
+
+        const cell = (values: string[], colName: string): string => {
+          const idx = headers.indexOf(colName);
+          if (idx === -1 || idx >= values.length) return '';
+          return (values[idx] ?? '').trim();
+        };
+
+        const normalizeRowValues = (values: string[]): string[] => {
+          const row = [...values];
+          while (row.length < headers.length) row.push('');
+          if (row.length > headers.length) return row.slice(0, headers.length);
+          return row;
+        };
+
         // 解析数据行
         const albums: Album[] = [];
         for (let i = 1; i < lines.length; i++) {
-          const values = parseCSVLine(lines[i]);
-          
-          if (values.length !== headers.length) {
-            reject(new Error(`第${i + 1}行数据列数不匹配，期望${headers.length}列，实际${values.length}列`));
-            return;
-          }
-          
+          const rawValues = parseCSVLine(lines[i]);
+          const values = normalizeRowValues(rawValues);
+
           const album: Album = {
-            albumId: values[headers.indexOf('专辑id')]?.trim() || '',
-            albumName: values[headers.indexOf('专辑名称')]?.trim() || '',
-            bookName: values[headers.indexOf('书名')]?.trim() || '',
-            category: values[headers.indexOf('赛道品类')]?.trim() || '',
-            image1: values[headers.indexOf('图片1链接')]?.trim() || '',
-            image2: values[headers.indexOf('图片2链接')]?.trim() || '',
-            image3: values[headers.indexOf('图片3链接')]?.trim() || '',
-            image4: values[headers.indexOf('图片4链接')]?.trim() || '',
+            albumId: cell(values, '专辑id'),
+            albumName: cell(values, '专辑名称'),
+            bookName: cell(values, '书名'),
+            category: cell(values, '赛道品类'),
+            image1: cell(values, '图片1链接'),
+            image2: cell(values, '图片2链接'),
+            image3: cell(values, '图片3链接'),
+            image4: cell(values, '图片4链接'),
           };
-          
-          // 校验必需字段
+
+          // 仅专辑 id 必填
           if (!album.albumId) {
             reject(new Error(`第${i + 1}行：专辑id不能为空`));
             return;
           }
-          
+
           albums.push(album);
         }
         

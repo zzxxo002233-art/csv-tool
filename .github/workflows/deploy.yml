@@ -4,6 +4,10 @@ on:
   push:
     branches: [ main ]
 
+# 必须赋予写入权限，否则推送 gh-pages 会 403
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

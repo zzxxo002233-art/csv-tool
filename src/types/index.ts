@@ -47,7 +47,9 @@ export interface OperationLog {
   result: string;
 }
 
-// CSV导入字段
+// CSV 表头：导入时仅「专辑id」必填；其余列可出现在表头中，缺失则按空值处理
+export const CSV_REQUIRED_HEADER = '专辑id' as const;
+
 export const CSV_HEADERS = [
   '专辑id',
   '专辑名称',
