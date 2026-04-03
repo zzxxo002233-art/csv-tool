@@ -349,12 +349,10 @@ export const ReviewPage: React.FC = () => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gridTemplateRows: 'repeat(2, 1fr)',
+            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
             gap: '14px',
-            // 让图片区尽量占满一屏：根据视口高度减去顶部信息与底部操作条的“保守估计”
-            maxHeight: 'calc(100dvh - 260px)',
-            height: 'calc(100dvh - 260px)',
+            alignContent: 'start',
+            // 行高由内容决定，避免固定视口高度 + 1fr 行把底部两格压扁，导致「图片4」看起来不显示
           }}
         >
           {[1, 2, 3, 4].map(index => {
@@ -448,21 +446,18 @@ export const ReviewPage: React.FC = () => {
                 <div
                   style={{
                     width: '100%',
-                    flex: 1,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: '8px',
                     backgroundColor: '#F5F5F5',
-                    minHeight: 0,
                     position: 'relative',
                   }}
                 >
                   <div
                     style={{
-                      // 以"高度"为约束推导宽度，确保 3:4 图片完整呈现（不会被裁切）
                       width: '100%',
-                      height: '100%',
+                      maxWidth: '100%',
                       aspectRatio: '3 / 4',
                       position: 'relative',
                       backgroundColor: '#F5F5F5',
@@ -478,6 +473,7 @@ export const ReviewPage: React.FC = () => {
                             src={srcWithRetry}
                             alt=""
                             loading="eager"
+                            referrerPolicy="no-referrer"
                             style={{
                               position: 'absolute',
                               top: 0,

@@ -17,20 +17,26 @@ export function parseCSV(file: File): Promise<Album[]> {
           return;
         }
         
-        // 解析表头
-        const headerLine = lines[0];
-        const headers = parseCSVLine(headerLine);
-        
+        // 解析表头：去 BOM、去首尾空格，避免 Excel/记事本导出后「图片4链接」列对不上
+        const headerLine = lines[0].replace(/^\uFEFF/, '');
+        const headers = parseCSVLine(headerLine).map((h) => h.replace(/^\uFEFF/, '').trim());
+
         // 表头：仅要求包含「专辑id」，其余列选填（可省略整列）
         if (!headers.includes(CSV_REQUIRED_HEADER)) {
           reject(new Error(`缺少必需字段：${CSV_REQUIRED_HEADER}`));
           return;
         }
 
-        const cell = (values: string[], colName: string): string => {
-          const idx = headers.indexOf(colName);
-          if (idx === -1 || idx >= values.length) return '';
-          return (values[idx] ?? '').trim();
+        /** 按列名取值，支持常见别名（如「图片4」） */
+        const cell = (values: string[], colName: string, ...aliases: string[]): string => {
+          const names = [colName, ...aliases];
+          for (const name of names) {
+            const idx = headers.indexOf(name);
+            if (idx !== -1 && idx < values.length) {
+              return (values[idx] ?? '').trim();
+            }
+          }
+          return '';
         };
 
         const normalizeRowValues = (values: string[]): string[] => {
@@ -51,10 +57,10 @@ export function parseCSV(file: File): Promise<Album[]> {
             albumName: cell(values, '专辑名称'),
             bookName: cell(values, '书名'),
             category: cell(values, '赛道品类'),
-            image1: cell(values, '图片1链接'),
-            image2: cell(values, '图片2链接'),
-            image3: cell(values, '图片3链接'),
-            image4: cell(values, '图片4链接'),
+            image1: cell(values, '图片1链接', '图片1'),
+            image2: cell(values, '图片2链接', '图片2'),
+            image3: cell(values, '图片3链接', '图片3'),
+            image4: cell(values, '图片4链接', '图片4'),
           };
 
           // 仅专辑 id 必填
